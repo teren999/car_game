@@ -1,4 +1,5 @@
 using UnityEngine; // Добавляем пространство имён для MonoBehaviour и Rigidbody
+using UnityEngine.UI;
 
 public class SimpleCarController : MonoBehaviour
 {
@@ -8,6 +9,13 @@ public class SimpleCarController : MonoBehaviour
     private float bounceBackTimer = 0f;
     private bool isBouncingBack = false;
     public float bounceBackTime = 0.5f;
+    
+    private float turnInput = 0f;
+
+    public void SetTurnInput(float input)
+    {
+     turnInput = input;
+    }
 
     void Start()
     {
@@ -18,22 +26,21 @@ public class SimpleCarController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isBouncingBack)
-        {
+      if (isBouncingBack)
+      {
             bounceBackTimer -= Time.fixedDeltaTime;
             rb.linearVelocity = -transform.forward * maxSpeed;
 
-            if (bounceBackTimer <= 0f)
-                isBouncingBack = false;
+           if (bounceBackTimer <= 0f)
+               isBouncingBack = false;
+          return;
+     }
 
-            return;
-        }
-        // Всегда двигаемся вперёд с максимальной скоростью
-        rb.linearVelocity = transform.forward * maxSpeed;
+     rb.linearVelocity = transform.forward * maxSpeed;
 
-        // Плавный поворот без изменения скорости
-        float turnInput = Input.GetAxis("Horizontal");
-        transform.Rotate(0, turnInput * turnSpeed * Time.fixedDeltaTime, 0);
+     // Если мобильное управление, используем turnInput, иначе — ось
+     float input = turnInput != 0f ? turnInput : Input.GetAxis("Horizontal");
+     transform.Rotate(0, input * turnSpeed * Time.fixedDeltaTime, 0);
     }
     void OnCollisionEnter(Collision collision)
     {

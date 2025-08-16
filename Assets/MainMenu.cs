@@ -1,11 +1,20 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
     public GameObject mainButtons; // Родитель кнопок "Играть" и "Магазин"
     public GameObject shopUI;      // Магазин
     public StoreManager storeManager;
+    public Text ScoreText;
+    public int Score;
+
+    public void Start()
+    {
+        Score = PlayerPrefs.GetInt("TotalScore", 0);
+         ScoreText.text = $"{Score}";
+    }
 
     
     //private void Awake()

@@ -3,6 +3,7 @@ using UnityEngine;
 public class TailCollider : MonoBehaviour
 {
     private Transform owner;
+    private static readonly System.Collections.Generic.HashSet<Transform> alreadyKilled = new();
 
     public void SetOwner(Transform newOwner)
     {
@@ -15,12 +16,17 @@ public class TailCollider : MonoBehaviour
 
         Transform otherRoot = other.transform.root;
 
-        // Игнорируем столкновение с владельцем
-        if (otherRoot == owner) return;
+        if (otherRoot == owner) return; // Игнорируем столкновение с собой
 
-        if (otherRoot.CompareTag("Player") || otherRoot.CompareTag("Enemy"))
+        if (alreadyKilled.Contains(otherRoot)) return; // Уже обрабатывался
+        alreadyKilled.Add(otherRoot);
+
+        string tag = otherRoot.tag;
+        if (tag == "Player" || tag == "Enemy")
         {
-            Debug.Log("Уничтожен: " + otherRoot.name); // ⬅ Добавим лог
+           // Debug.Log($"Уничтожен: {otherRoot.name} с тегом: {tag}");
+            GameOverManager.Instance.OnPlayerDied(otherRoot.tag);
+
             Destroy(otherRoot.gameObject);
         }
     }
